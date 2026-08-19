@@ -18,7 +18,7 @@ local CollectionService = game:GetService("CollectionService")
 local VirtualUser = game:GetService("VirtualUser")
 
 -- ============================================================
---  ITEM DATABASE[span_0](start_span)[span_0](end_span)
+--  ITEM DATABASE[span_1](start_span)[span_1](end_span)
 -- ============================================================
 local SEEDS = {
     "Carrot", "Strawberry", "Blueberry", "Tulip", "Tomato", "Apple",
@@ -52,7 +52,7 @@ local SEED_OPTIONS = {"All"}
 for _, v in ipairs(SEEDS) do table.insert(SEED_OPTIONS, v) end
 
 -- ============================================================
---  MODUL DAN FUNGSI INTI (BACKEND TETAP AMAN)[span_1](start_span)[span_1](end_span)
+--  MODUL DAN FUNGSI INTI (BACKEND TETAP AMAN)[span_2](start_span)[span_2](end_span)
 -- ============================================================
 local Networking, SeedData, FruitValueCalc, PlantLifecycleHandler, StealFlags
 
@@ -119,7 +119,7 @@ local function isSelected(items, name)
 end
 
 -- ============================================================
---  STATE[span_2](start_span)[span_2](end_span)
+--  STATE[span_3](start_span)[span_3](end_span)
 -- ============================================================
 local S = {
     autoHarvest = false, autoSell = false, autoSteal = false, autoBuy = false, autoPlant = false,
@@ -130,7 +130,7 @@ local S = {
 local Selected = { harvestItem = "All", plantItem = "All", buyItem = "All" }
 
 -- ============================================================
---  FUNGSI UTAMA (PANEN, JUAL, BELI, CURI)[span_3](start_span)[span_3](end_span)
+--  FUNGSI UTAMA (PANEN, JUAL, BELI, CURI)[span_4](start_span)[span_4](end_span)
 -- ============================================================
 local function harvestSpecific(items)
     local plot = getMyPlot()
@@ -268,10 +268,12 @@ end
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/nootmaus/pulselyb/refs/heads/main/.lua"))()
 local IMAGE_ID = "75991977420487"
 
+-- DI SINI PENAMBAHAN KEYBIND F3-NYA!
 local Window = Library:Window({
     Name = "WISNU HUB",
     SubName = "Grow a Garden 2",
-    Logo = IMAGE_ID
+    Logo = IMAGE_ID,
+    KeyBind = Enum.KeyCode.F3
 })
 Window:SetOpen(true)
 
@@ -374,7 +376,7 @@ SectionSettings:Toggle({
 })
 
 -- ============================================================
---  MAIN LOOPS[span_4](start_span)[span_4](end_span)
+--  MAIN LOOPS[span_5](start_span)[span_5](end_span)
 -- ============================================================
 task.spawn(function() while true do task.wait(1) if S.autoHarvest then harvestSpecific(Selected.harvestItem) end end end)
 task.spawn(function() while true do task.wait(S.sellInterval or 60) if S.autoSell then sellAll() end end end)
@@ -387,4 +389,4 @@ LocalPlayer.Idled:Connect(function()
 end)
 
 Library:Notification({ Title = "WISNU HUB", Description = "Grow a Garden 2 Script Loaded!", Duration = 3, Icon = IMAGE_ID })
-print("✅ WISNU HUB (Pulse Style) loaded!")
+print("✅ WISNU HUB  loaded!")
