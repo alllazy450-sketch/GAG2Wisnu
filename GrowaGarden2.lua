@@ -1,8 +1,8 @@
 -- ============================================================
---  W424HUB-GAG2 | V.3.1 (WisnuVIP Style UI)
---  Grow a Garden 2 – All-in-One
+--  WISNU HUB - GROW A GARDEN 2 (Wisnu UI)
+--  All-in-One Auto Farm
 -- ============================================================
-print("=== LOADING W424HUB-GAG2 V.3.1 ===")
+print("=== LOADING WISNU HUB - GAG2 ===")
 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
@@ -17,33 +17,131 @@ local LocalPlayer = Players.LocalPlayer
 local CollectionService = game:GetService("CollectionService")
 local VirtualUser = game:GetService("VirtualUser")
 
--- ===== LOAD KEZODX LIBRARY (WisnuVIP UI) =====
-local repo = "https://raw.githubusercontent.com/kezodxyz/KezodX/refs/heads/main/"
-local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
-local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
-local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
-
+-- ===== LOAD PULSELYB LIBRARY (Wisnu UI) =====
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/nootmaus/pulselyb/refs/heads/main/.lua"))()
 if not Library then error("Library gagal dimuat") end
 
-Library.ForceCheckbox = false
-Library.ShowToggleFrameInKeybinds = true
+local IMAGE_ID = "75991977420487"
 
-local Window = Library:CreateWindow({
-    Title = "W424HUB-GAG2 | V.3.1",
-    Footer = "Grow a Garden 2",
-    Icon = "96848424314690",
-    IconSize = UDim2.fromOffset(50, 50),
-    NotifySide = "Right",
-    EnableSidebarResize = true,
-    EnableCompacting = true,
-    SidebarCompacted = true,
-    Size = UDim2.fromOffset(450, 550),
-    CornerRadius = 20,
-    AutoShow = true,
+-- === WINDOW ===
+local Window = Library:Window({
+    Name = "WISNU HUB",
+    SubName = "Grow a Garden 2 Auto Farm",
+    Logo = IMAGE_ID
 })
 
+Window:SetOpen(true)
+
+-- === PERBAIKI LOGO & TEKS ===
+pcall(function()
+    local logo = Window.Items.Logo
+    if logo then
+        logo.Instance.Size = UDim2.new(0, 50, 0, 50)
+        logo.Instance.Position = UDim2.new(0, 15, 0, 12)
+        logo.Instance.ImageTransparency = 0
+        logo.Instance.ImageColor3 = Color3.new(1, 1, 1)
+    end
+    local title = Window.Items.Title
+    if title then
+        title.Instance.Position = UDim2.new(0, 75, 0, 13)
+        title.Instance.TextSize = 18
+    end
+    local sub = Window.Items.SubTitle
+    if sub then
+        sub.Instance.Position = UDim2.new(0, 75, 0, 33)
+        sub.Instance.TextSize = 15
+    end
+end)
+
+-- === PERBAIKI ICON TAB ===
+pcall(function()
+    for _, page in pairs(Window.Pages) do
+        if page.Items and page.Items.Icon then
+            page.Items.Icon.Instance.ImageTransparency = 0
+            page.Items.Icon.Instance.ImageColor3 = Color3.new(1, 1, 1)
+            page.Items.Icon.Instance.Size = UDim2.new(0, 24, 0, 24)
+        end
+    end
+end)
+
+-- === HAPUS BUBBLE BAWAAN ===
+pcall(function()
+    if Window.Items and Window.Items.FloatingButton then
+        Window.Items.FloatingButton.Instance:Destroy()
+    end
+end)
+
+-- === BUBBLE CERDAS ===
+local function createBubble()
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 75, 0, 75)
+    btn.Position = UDim2.new(0.5, -37, 0.5, -37)
+    btn.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    btn.BackgroundTransparency = 0
+    btn.Text = ""
+    btn.Parent = Library.Holder.Instance
+    btn.ZIndex = 10
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 18)
+    corner.Parent = btn
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(100, 100, 110)
+    stroke.Thickness = 1.5
+    stroke.Parent = btn
+
+    local icon = Instance.new("ImageLabel")
+    icon.Size = UDim2.new(0.8, 0, 0.8, 0)
+    icon.Position = UDim2.new(0.1, 0, 0.1, 0)
+    icon.BackgroundTransparency = 1
+    icon.Image = "rbxassetid://" .. IMAGE_ID
+    icon.ScaleType = Enum.ScaleType.Fit
+    icon.ImageTransparency = 0
+    icon.ImageColor3 = Color3.new(1, 1, 1)
+    icon.ZIndex = 20
+    icon.Parent = btn
+
+    btn.MouseButton1Click:Connect(function()
+        Window:SetOpen(not Window.IsOpen)
+    end)
+
+    local dragging = false
+    local dragStart, startPos
+    btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = btn.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            btn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    return btn
+end
+
+createBubble()
+
+-- === PERBESAR UI ===
+pcall(function()
+    local mainFrame = Window.Items["MainFrame"].Instance
+    local scale = Instance.new("UIScale")
+    scale.Scale = 1.3
+    scale.Parent = mainFrame
+end)
+
 -- ============================================================
---  ITEM DATABASE
+--  ITEM DATABASE (LENGKAP 33 SEED)
 -- ============================================================
 local SEEDS = {
     "Carrot", "Strawberry", "Blueberry", "Tulip", "Tomato", "Apple",
@@ -69,7 +167,7 @@ local CRATES = {
 }
 
 -- ============================================================
---  MODUL DAN FUNGSI INTI (SAMA SEPERTI SEBELUMNYA)
+--  MODUL DAN FUNGSI INTI (DARI GAG2)
 -- ============================================================
 local Networking, SeedData, FruitValueCalc, PlantLifecycleHandler, StealFlags
 
@@ -99,7 +197,14 @@ local Night = ReplicatedStorage:FindFirstChild("Night")
 local function getMyPlot()
     if not Gardens then return nil end
     for _, plot in ipairs(Gardens:GetChildren()) do
-        if plot:GetAttribute("Owner") == LocalPlayer.Name then return plot end
+        local owner = plot:GetAttribute("OwnerId") or plot:GetAttribute("Owner")
+        if owner then
+            if type(owner) == "number" and owner == LocalPlayer.UserId then
+                return plot
+            elseif type(owner) == "string" and owner == LocalPlayer.Name then
+                return plot
+            end
+        end
     end
     return nil
 end
@@ -108,8 +213,10 @@ local function isNightTime()
     return Night and Night.Value == true
 end
 
-local function getChar() return LocalPlayer.Character end
-local function getHRP() local c = getChar() return c and c:FindFirstChild("HumanoidRootPart") end
+local function getHRP()
+    local c = LocalPlayer.Character
+    return c and c:FindFirstChild("HumanoidRootPart")
+end
 
 local function teleportTo(targetCF, speed)
     speed = speed or 35
@@ -119,8 +226,7 @@ local function teleportTo(targetCF, speed)
     local dist = (targetCF.Position - start.Position).Magnitude
     if dist < 2 then return end
     local duration = dist / speed
-    local con
-    local elapsed = 0
+    local con, elapsed = nil, 0
     con = RunService.RenderStepped:Connect(function(dt)
         elapsed = elapsed + dt
         if elapsed >= duration then
@@ -154,7 +260,7 @@ local function isSelected(items, name)
 end
 
 -- ============================================================
---  FUNGSI UTAMA
+--  FUNGSI UTAMA (DARI GAG2)
 -- ============================================================
 local Selected = {
     harvestItem = {},
@@ -416,154 +522,482 @@ local S = {
 }
 
 -- ============================================================
---  UI – WisnuVIP Style (KezodX Library)
+--  UI – WISNU UI STYLE (PULSELYB)
 -- ============================================================
 
--- Tabs
-local Tabs = {
-    Farm = Window:AddTab("Farm", "garden", "Panen & Tanam"),
-    Shop = Window:AddTab("Shop", "shopping-bag", "Beli & Buka item"),
-    Steal = Window:AddTab("Steal", "skull", "Curi buah"),
-    Misc = Window:AddTab("Misc", "sliders-horizontal", "Lainnya"),
-    Config = Window:AddTab("Config", "settings-2", "UI Settings"),
-}
+local TabUtama = Window:Page({
+    Name = "Auto Farm",
+    Icon = "",
+    Columns = 2
+})
 
--- ===== FARM TAB =====
-local FarmLeft = Tabs.Farm:AddLeftGroupbox("Auto Farm", "bot")
-local FarmRight = Tabs.Farm:AddRightGroupbox("Manually", "play")
+pcall(function()
+    if TabUtama and TabUtama.Items then
+        if TabUtama.Items.Icon then
+            TabUtama.Items.Icon.Instance:Destroy()
+        end
+        if TabUtama.Items.Text then
+            TabUtama.Items.Text.Instance.Position = UDim2.new(0, 16, 0.5, 0)
+        end
+    end
+end)
 
-FarmLeft:AddToggle("AutoHarvest", {
-    Text = "Auto Harvest",
+-- ===== SECTION KIRI (Fitur Utama) =====
+local SectionKiri = TabUtama:Section({
+    Name = "Fitur Utama",
+    Description = "Pengaturan Auto Farm",
+    Side = 1
+})
+
+-- Auto Harvest
+SectionKiri:Toggle({
+    Name = "Auto Harvest",
     Default = false,
-    Callback = function(v) S.autoHarvest = v end
+    Callback = function(v)
+        S.autoHarvest = v
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Auto Harvest: " .. (v and "ON" or "OFF"),
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
 })
-FarmLeft:AddToggle("AutoSell", {
-    Text = "Auto Sell",
+
+-- Auto Sell
+SectionKiri:Toggle({
+    Name = "Auto Sell",
     Default = false,
-    Callback = function(v) S.autoSell = v end
+    Callback = function(v)
+        S.autoSell = v
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Auto Sell: " .. (v and "ON" or "OFF"),
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
 })
-FarmLeft:AddSlider("SellInterval", {
-    Text = "Sell Interval (s)",
-    Default = 60,
-    Min = 5,
-    Max = 300,
-    Rounding = 0,
-    Callback = function(v) S.sellInterval = v end
-})
-FarmLeft:AddToggle("AutoPlant", {
-    Text = "Auto Plant",
+
+-- Auto Plant
+SectionKiri:Toggle({
+    Name = "Auto Plant",
     Default = false,
-    Callback = function(v) S.autoPlant = v end
-})
-FarmLeft:AddSlider("PlantInterval", {
-    Text = "Plant Interval (s)",
-    Default = 10,
-    Min = 5,
-    Max = 120,
-    Rounding = 0,
-    Callback = function(v) S.plantInterval = v end
-})
-FarmLeft:AddDivider()
-FarmLeft:AddDropdown("HarvestItem", {
-    Text = "Harvest Item",
-    Values = {"All", unpack(SEEDS)},
-    Default = "All",
-    Multi = true,
-    Callback = function(v) Selected.harvestItem = v end
-})
-FarmLeft:AddDropdown("PlantItem", {
-    Text = "Plant Item",
-    Values = {"All", unpack(SEEDS)},
-    Default = "All",
-    Multi = true,
-    Callback = function(v) Selected.plantItem = v end
+    Callback = function(v)
+        S.autoPlant = v
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Auto Plant: " .. (v and "ON" or "OFF"),
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
 })
 
-FarmRight:AddButton("Harvest Now", function()
-    local count = harvestSpecific(Selected.harvestItem)
-    Library:Notify({Title = "Harvest", Description = "Panen " .. count .. " tanaman", Duration = 2})
-end)
-FarmRight:AddButton("Sell Now", function()
-    sellAll()
-    Library:Notify({Title = "Sell", Description = "Semua terjual!", Duration = 2})
-end)
-FarmRight:AddButton("Plant Now", function()
-    plantSpecific(Selected.plantItem)
-    Library:Notify({Title = "Plant", Description = "Menanam bibit terpilih", Duration = 2})
-end)
-
--- ===== SHOP TAB =====
-local ShopLeft = Tabs.Shop:AddLeftGroupbox("Auto Buy", "shopping-cart")
-local ShopRight = Tabs.Shop:AddRightGroupbox("Open", "box")
-
-ShopLeft:AddToggle("AutoBuy", {
-    Text = "Auto Buy",
+-- Auto Buy
+SectionKiri:Toggle({
+    Name = "Auto Buy",
     Default = false,
-    Callback = function(v) S.autoBuy = v end
+    Callback = function(v)
+        S.autoBuy = v
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Auto Buy: " .. (v and "ON" or "OFF"),
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
 })
-ShopLeft:AddSlider("BuyInterval", {
-    Text = "Buy Interval (s)",
-    Default = 30,
-    Min = 5,
-    Max = 300,
-    Rounding = 0,
-    Callback = function(v) S.buyInterval = v end
-})
-ShopLeft:AddDivider()
-ShopLeft:AddDropdown("BuyItem", {
-    Text = "Buy Item",
-    Values = {"All", unpack(SEEDS), unpack(GEARS), unpack(CRATES)},
-    Default = "All",
-    Multi = true,
-    Callback = function(v) Selected.buyItem = v end
-})
-ShopLeft:AddButton("Buy Now", function()
-    buySpecific(Selected.buyItem)
-    Library:Notify({Title = "Buy", Description = "Membeli item terpilih", Duration = 2})
-end)
 
-ShopRight:AddButton("Open All Eggs", function()
-    openItems("Eggs")
-    Library:Notify({Title = "Open", Description = "Semua telur dibuka!", Duration = 2})
-end)
-ShopRight:AddButton("Open All Crates", function()
-    openItems("Crates")
-    Library:Notify({Title = "Open", Description = "Semua crate dibuka!", Duration = 2})
-end)
-ShopRight:AddButton("Open All Seed Packs", function()
-    openItems("SeedPacks")
-    Library:Notify({Title = "Open", Description = "Semua seed pack dibuka!", Duration = 2})
-end)
-
--- ===== STEAL TAB =====
-local StealLeft = Tabs.Steal:AddLeftGroupbox("Auto Steal", "moon")
-StealLeft:AddToggle("AutoSteal", {
-    Text = "Auto Steal (Night only)",
-    Default = false,
-    Callback = function(v) S.autoSteal = v end
-})
-StealLeft:AddSlider("StealInterval", {
-    Text = "Steal Interval (s)",
+-- Slider Harvest Interval
+SectionKiri:Slider({
+    Name = "Harvest Interval (s)",
+    Min = 1,
+    Max = 30,
     Default = 5,
+    Suffix = "s",
+    Decimals = 0,
+    Callback = function(v)
+        S.harvestInterval = v
+    end
+})
+
+-- Slider Plant Interval
+SectionKiri:Slider({
+    Name = "Plant Interval (s)",
+    Min = 5,
+    Max = 60,
+    Default = 15,
+    Suffix = "s",
+    Decimals = 0,
+    Callback = function(v)
+        S.plantInterval = v
+    end
+})
+
+-- Slider Sell Interval
+SectionKiri:Slider({
+    Name = "Sell Interval (s)",
+    Min = 10,
+    Max = 120,
+    Default = 60,
+    Suffix = "s",
+    Decimals = 0,
+    Callback = function(v)
+        S.sellInterval = v
+    end
+})
+
+-- Slider Buy Interval
+SectionKiri:Slider({
+    Name = "Buy Interval (s)",
+    Min = 10,
+    Max = 120,
+    Default = 30,
+    Suffix = "s",
+    Decimals = 0,
+    Callback = function(v)
+        S.buyInterval = v
+    end
+})
+
+-- Dropdown Harvest Item (Multi Select)
+local harvestOptions = {"All"}
+for _, seed in ipairs(SEEDS) do table.insert(harvestOptions, seed) end
+
+if SectionKiri.Dropdown then
+    SectionKiri:Dropdown({
+        Name = "Harvest Item",
+        Options = harvestOptions,
+        Default = "All",
+        Multi = true,
+        Callback = function(v)
+            Selected.harvestItem = v
+            Library:Notification({
+                Title = "WISNU HUB",
+                Description = "Harvest item diupdate",
+                Duration = 2,
+                Icon = IMAGE_ID
+            })
+        end
+    })
+else
+    SectionKiri:Button({
+        Name = "Harvest Item: All (click to cycle)",
+        Callback = function()
+            local idx = table.find(harvestOptions, Selected.harvestItem) or 1
+            idx = idx % #harvestOptions + 1
+            Selected.harvestItem = harvestOptions[idx]
+            Library:Notification({
+                Title = "WISNU HUB",
+                Description = "Harvest item: " .. Selected.harvestItem,
+                Duration = 2,
+                Icon = IMAGE_ID
+            })
+        end
+    })
+end
+
+-- Dropdown Plant Item (Multi Select)
+local plantOptions = {"All"}
+for _, seed in ipairs(SEEDS) do table.insert(plantOptions, seed) end
+
+if SectionKiri.Dropdown then
+    SectionKiri:Dropdown({
+        Name = "Plant Item",
+        Options = plantOptions,
+        Default = "All",
+        Multi = true,
+        Callback = function(v)
+            Selected.plantItem = v
+            Library:Notification({
+                Title = "WISNU HUB",
+                Description = "Plant item diupdate",
+                Duration = 2,
+                Icon = IMAGE_ID
+            })
+        end
+    })
+else
+    SectionKiri:Button({
+        Name = "Plant Item: All (click to cycle)",
+        Callback = function()
+            local idx = table.find(plantOptions, Selected.plantItem) or 1
+            idx = idx % #plantOptions + 1
+            Selected.plantItem = plantOptions[idx]
+            Library:Notification({
+                Title = "WISNU HUB",
+                Description = "Plant item: " .. Selected.plantItem,
+                Duration = 2,
+                Icon = IMAGE_ID
+            })
+        end
+    })
+end
+
+-- Dropdown Buy Item (Multi Select)
+local buyOptions = {"All"}
+for _, seed in ipairs(SEEDS) do table.insert(buyOptions, seed) end
+for _, gear in ipairs(GEARS) do table.insert(buyOptions, gear) end
+for _, crate in ipairs(CRATES) do table.insert(buyOptions, crate) end
+
+if SectionKiri.Dropdown then
+    SectionKiri:Dropdown({
+        Name = "Buy Item",
+        Options = buyOptions,
+        Default = "All",
+        Multi = true,
+        Callback = function(v)
+            Selected.buyItem = v
+            Library:Notification({
+                Title = "WISNU HUB",
+                Description = "Buy item diupdate",
+                Duration = 2,
+                Icon = IMAGE_ID
+            })
+        end
+    })
+else
+    SectionKiri:Button({
+        Name = "Buy Item: All (click to cycle)",
+        Callback = function()
+            local idx = table.find(buyOptions, Selected.buyItem) or 1
+            idx = idx % #buyOptions + 1
+            Selected.buyItem = buyOptions[idx]
+            Library:Notification({
+                Title = "WISNU HUB",
+                Description = "Buy item: " .. Selected.buyItem,
+                Duration = 2,
+                Icon = IMAGE_ID
+            })
+        end
+    })
+end
+
+-- Tombol Aksi
+SectionKiri:Button({
+    Name = "Harvest Now",
+    Callback = function()
+        local count = harvestSpecific(Selected.harvestItem)
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Panen " .. count .. " tanaman",
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+SectionKiri:Button({
+    Name = "Sell Now",
+    Callback = function()
+        sellAll()
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Semua terjual!",
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+SectionKiri:Button({
+    Name = "Plant Now",
+    Callback = function()
+        plantSpecific(Selected.plantItem)
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Menanam bibit terpilih",
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+SectionKiri:Button({
+    Name = "Buy Now",
+    Callback = function()
+        buySpecific(Selected.buyItem)
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Membeli item terpilih",
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+SectionKiri:Button({
+    Name = "Open All Eggs",
+    Callback = function()
+        openItems("Eggs")
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Semua telur dibuka!",
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+SectionKiri:Button({
+    Name = "Open All Crates",
+    Callback = function()
+        openItems("Crates")
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Semua crate dibuka!",
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+SectionKiri:Button({
+    Name = "Open All Seed Packs",
+    Callback = function()
+        openItems("SeedPacks")
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Semua seed pack dibuka!",
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+-- ===== SECTION KANAN (Player Set) =====
+local SectionKanan = TabUtama:Section({
+    Name = "Player Set",
+    Description = "Kecepatan & Lompat",
+    Side = 2
+})
+
+SectionKanan:Slider({
+    Name = "Walkspeed",
+    Min = 16,
+    Max = 100,
+    Default = 16,
+    Suffix = " WS",
+    Decimals = 1,
+    Callback = function(Value)
+        pcall(function()
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("Humanoid") then
+                char.Humanoid.WalkSpeed = Value
+            end
+        end)
+    end
+})
+
+local infiniteJumpEnabled = false
+SectionKanan:Toggle({
+    Name = "Infinite Jump",
+    Default = false,
+    Callback = function(v)
+        infiniteJumpEnabled = v
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Infinite Jump: " .. (v and "ON" or "OFF"),
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+UserInputService.JumpRequest:Connect(function()
+    if infiniteJumpEnabled then
+        local char = LocalPlayer.Character
+        if char then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end
+    end
+end)
+
+-- ===== SECTION STEAL (Tambahan) =====
+local TabSteal = Window:Page({
+    Name = "Steal",
+    Icon = "",
+    Columns = 1
+})
+
+local StealSection = TabSteal:Section({
+    Name = "Auto Steal",
+    Description = "Curi buah saat malam",
+    Side = 1
+})
+
+StealSection:Toggle({
+    Name = "Auto Steal",
+    Default = false,
+    Callback = function(v)
+        S.autoSteal = v
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Auto Steal: " .. (v and "ON" or "OFF"),
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+StealSection:Slider({
+    Name = "Steal Interval (s)",
     Min = 3,
     Max = 30,
-    Rounding = 0,
-    Callback = function(v) S.stealInterval = v end
+    Default = 5,
+    Suffix = "s",
+    Decimals = 0,
+    Callback = function(v)
+        S.stealInterval = v
+    end
 })
-StealLeft:AddButton("Steal Now", function()
-    performSteal()
-    Library:Notify({Title = "Steal", Description = "Mencoba mencuri...", Duration = 2})
-end)
 
--- ===== MISC TAB =====
-local MiscLeft = Tabs.Misc:AddLeftGroupbox("Misc", "sliders-horizontal")
-MiscLeft:AddToggle("AntiAfk", {
-    Text = "Anti-AFK",
-    Default = true,
-    Callback = function(v) S.antiAfk = v end
+StealSection:Button({
+    Name = "Steal Now",
+    Callback = function()
+        performSteal()
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Mencoba mencuri...",
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
 })
-MiscLeft:AddToggle("Optimize", {
-    Text = "Optimize (FPS)",
+
+-- ===== SECTION MISC =====
+local TabMisc = Window:Page({
+    Name = "Misc",
+    Icon = "",
+    Columns = 1
+})
+
+local MiscSection = TabMisc:Section({
+    Name = "Lainnya",
+    Description = "Fitur tambahan",
+    Side = 1
+})
+
+MiscSection:Toggle({
+    Name = "Anti-AFK",
+    Default = true,
+    Callback = function(v)
+        S.antiAfk = v
+        Library:Notification({
+            Title = "WISNU HUB",
+            Description = "Anti-AFK: " .. (v and "ON" or "OFF"),
+            Duration = 2,
+            Icon = IMAGE_ID
+        })
+    end
+})
+
+MiscSection:Toggle({
+    Name = "Optimize (FPS)",
     Default = false,
     Callback = function(v)
         S.optimize = v
@@ -581,20 +1015,14 @@ MiscLeft:AddToggle("Optimize", {
         end
     end
 })
-MiscLeft:AddButton("Unload Script", function()
-    Window:Destroy()
-end)
 
--- ===== CONFIG TAB (UI Settings) =====
-ThemeManager:SetLibrary(Library)
-SaveManager:SetLibrary(Library)
-SaveManager:IgnoreThemeSettings()
-SaveManager:SetIgnoreIndexes({})
-ThemeManager:SetFolder("W424GAG2")
-SaveManager:SetFolder("W424GAG2/configs")
-SaveManager:BuildConfigSection(Tabs.Config)
-ThemeManager:ApplyToTab(Tabs.Config)
-SaveManager:LoadAutoloadConfig()
+MiscSection:Button({
+    Name = "Unload Script",
+    Callback = function()
+        Window:Destroy()
+        print("WISNU HUB Unloaded")
+    end
+})
 
 -- ============================================================
 --  MAIN LOOPS
@@ -602,7 +1030,7 @@ SaveManager:LoadAutoloadConfig()
 
 task.spawn(function()
     while true do
-        task.wait(1)
+        task.wait(S.harvestInterval or 5)
         if S.autoHarvest then
             harvestSpecific(Selected.harvestItem)
         end
@@ -618,7 +1046,7 @@ end)
 
 task.spawn(function()
     while true do
-        task.wait(S.plantInterval or 10)
+        task.wait(S.plantInterval or 15)
         if S.autoPlant then plantSpecific(Selected.plantItem) end
     end
 end)
@@ -649,10 +1077,11 @@ end)
 -- ============================================================
 --  NOTIFIKASI AWAL
 -- ============================================================
-Library:Notify({
-    Title = "W424HUB-GAG2",
-    Description = "V.3.1 – WisnuVIP UI Style",
-    Duration = 5
+Library:Notification({
+    Title = "WISNU HUB",
+    Description = "Grow a Garden 2 Loaded!",
+    Duration = 5,
+    Icon = IMAGE_ID
 })
 
-print("✅ W424HUB-GAG2 V.3.1 (WisnuVIP UI) loaded!")
+print("✅ WISNU HUB - GROW A GARDEN 2 LOADED")
